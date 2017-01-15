@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+    <script src="static/echarts.js"></script>
+
+</head>
+<body>
+    <div id="main" style="width: 800px;height:600px;"></div>
+    <script type="text/javascript">
+
+        var myChart = echarts.init(document.getElementById('main'));
+        var option = {
+                tooltip : {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['准备金率']
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        magicType : {show: true, type: ['line', 'bar']},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                calculable : true,
+                xAxis : [
+                    {
+                        type : 'category',
+                        data : []
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value',
+                        splitArea : {show : true}
+                    }
+                ],
+                series : [
+                    {
+                        name:'准备金率',
+                        type:'line',
+                        data:[]
+                    }
+                ]
+            };
+
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: "/indexquote", //把表单数据发送到/indexquote
+            dataType : "json",  //返回数据形式为json
+            async: false,
+            error: function(request) {
+                alert("发送请求失败！");
+            },
+            success: function(result) {
+                for (i = 0, max = result.length; i < max; i++) { //注意：result.length
+                    option.xAxis[0].data.push(result[i].date);
+                    option.series[0].data.push(parseFloat(result[i].now));
+                };
+                    myChart.setOption(option);
+
+            }
+         });
+         
+    ;
+    </script>
+</body>
+</html>

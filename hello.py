@@ -1,12 +1,16 @@
-from flask import  Flask
+from flask import  Flask,render_template
+import pandas as pd
+import tushare as ts
 app = Flask(__name__)
-@app.route('/')
+@app.route("/", methods=["GET"])
 def index():
-    return '<h1>hello world!<h1>'
+    return render_template('index.html')
 
-@app.route('/user/<name>')
-def user(name):
-    return '<h1>hello,%s!</h1>' % name
+@app.route('/indexquote',methods=['GET', 'POST'])
+def indexquote():
+    df=ts.get_rrr()
+    df=df.sort(columns='date')
+    return df.to_json(orient='records')
 
 if __name__ == '__main__':
     app.run(debug=True)
