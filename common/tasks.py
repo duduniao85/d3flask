@@ -326,9 +326,6 @@ def crawlDailyQuote():
         db_url='mysql+pymysql://root:Wuxi1107@localhost:3306/test?charset=utf8mb4'
     db_engine = create_engine(db_url, echo=True)
     conn = db_engine.connect()
-    #TODO 增加ts.get_stock_basics()报错的处理，如果取不信息则直接用数据库中的股票代码信息，来获取增量信息
-    #TODO 增加一个标志，如果一个股票代码的最新日期不是最新日期，则需标记该代码不需要重新获取数据，即记录该股票更新日期到了最新工作日，
-    #TOdo 需要增加一个字段完成这些工作
     #每周读一次，用于更新后台数据
     df = ts.get_stock_basics()
     df.to_sql('stock_basics',db_engine,if_exists='replace',dtype={'code': CHAR(6)})
@@ -459,4 +456,5 @@ def stock_strategy_2():
     '''
     #TODO 获取成交量为近2个月平均成交量2位以上，但涨幅为0%-2%的股票清单
     pass
+
 

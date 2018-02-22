@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>trade</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" href="plug/bootstrap-datepicker/dist/css/bootstrap-datepicker.css" type="text/css" />
+    <link rel="stylesheet" href="plug/bootstrap-datetimepicker-2.0/css/bootstrap-datetimepicker.min.css" type="text/css" />
+    <link rel="StyleSheet" href="plug/bootstrap-3.3.7/css/bootstrap.min.css" type="text/css" />
+	<link rel="StyleSheet" href="plug/bootstrap-multiselect-2.0/css/bootstrap-multiselect.css" type="text/css" />
+    <link rel="StyleSheet" href="styles/trade.css" type="text/css" />
+    <script type="text/javascript" src="plug/jquery-2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="plug/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="plug/angular-1.4.6/angular.min.js"></script>
+	<script type="text/javascript" src="plug/bootstrap-multiselect-2.0/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="plug/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="plug/bootstrap-datepicker/dist/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+    <script type="text/javascript" src="plug/bootstrap-datetimepicker-2.0/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="plug/bootstrap-datetimepicker-2.0/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+
+    <script type="text/javascript">
+        angular.module('tradeApp', [])
+            .constant("baseURL", "http://127.0.0.1:5000")
+            .constant("debug", false)
+            .config(['$httpProvider', function($httpProvider) {
+                $httpProvider.defaults.withCredentials = true;
+            }]);
+    </script>
+    <script type="text/javascript" src="js/tradeService.js"></script>
+    <script type="text/javascript" src="js/tradeDirective.js"></script>
+    <script type="text/javascript" src="js/tradeController.js"></script>
+
+</head>
+<body class="panel-body" ng-app="tradeApp" >
+<div ng-controller="viewCtrl">
+
+    <h3>下交易单</h3>
+    <hr/>
+    <div class="row">
+
+        <form name="tradeForm" >
+            <div class="form-group col-sm-3">
+                <label>投资人姓名</label>
+                <select name="investorname" required class="form-control" 
+                    ng-model="trade.investorname"
+                    ng-options="p.investorname as p.investorname for p in iusers"
+                    multiselect="investornameOption" 
+                >
+                </select>
+            </div>
+            <div class="form-group col-sm-3">
+                <label>销售商代码</label>
+                <select ng-model="trade.distributorcode" 
+                    name="distributorcode" class="form-control" required
+                    ng-options="p.value as p.text for p in distributors"
+                >
+                </select>
+            </div>
+            <div class="form-group col-sm-3">
+                <label>对方用户姓名</label>
+                <select name="targetinvestorname" required class="form-control" 
+                    ng-model="trade.targetinvestorname"
+                    ng-options="p.investorname as p.investorname for p in iusers"
+                    multiselect="targetinvestornameOption" 
+                    ng-if="(trade.businesscode == '026' || trade.businesscode == '033')"
+                >
+                </select>
+                <select name="targetinvestorname" required class="form-control" 
+                    ng-model="trade.targetinvestorname"
+                    ng-if="!(trade.businesscode == '026' || trade.businesscode == '033')"
+                    ng-readonly="true"
+                    ng-init="trade.targetinvestorname=''"
+                >
+                </select>
+            </div>
+            <div class="form-group col-sm-3">
+                <label>对方销售商名称</label>
+                <select ng-model="trade.targetdistributorcode" 
+                    name="targetdistributorcode" class="form-control" required
+                    ng-options="p.value as p.text for p in distributors"
+                    ng-if="(trade.businesscode == '026' || trade.businesscode == '033')"
+                >
+                </select>
+                <select name="targetdistributorcode" required class="form-control" 
+                    ng-model="trade.targetdistributorcode"
+                    ng-if="!(trade.businesscode == '026' || trade.businesscode == '033')"
+                    ng-readonly="true"
+                    ng-init="trade.targetdistributorcode=''"
+                >
+                </select>
+            </div>
+            <div class="form-group col-sm-3">
+                <label>业务类型</label>
+                <select name="businesscode" required class="form-control" 
+                    ng-model="trade.businesscode"
+                    ng-options="p.value as p.text for p in businesscodes"
+                >
+                </select>
+            </div>
+            <div class="form-group col-sm-3">
+                <label>收属归属标识</label>
+                <select name="takeincomeflag" required class="form-control" 
+                    ng-model="trade.takeincomeflag"
+                    ng-options="p.value as p.text for p in takeincomeflags"
+                >
+                </select>
+            </div>
+            <div class="form-group col-sm-3">
+                <label>申请工作日</label>
+                <input ng-model="trade.transactiondate"
+                    datepicker="transactiondateOption" 
+                    class="form-control" type="text" 
+                    name="transactiondate" required/>
+            </div>
+            <div class="form-group col-sm-3">
+                <label>下单时间</label>
+                <input ng-model="trade.orgibusitime"
+                    datetimepicker="orgibusitimeOption" 
+                    class="form-control" type="text" 
+                    name="orgibusitime" required/>
+            </div>
+            <div class="form-group col-sm-3">
+                <label>申请份额</label>
+                <input ng-model="trade.applicationvol" 
+                    type="number" name="applicationvol" class="form-control" placeholder="" 
+                    required >
+            </div>
+            <div class="form-group col-sm-3">
+                <label>申请金额</label>
+                <input ng-model="trade.applicationamount" 
+                    type="number" name="applicationamount" class="form-control" placeholder="" 
+                    required >
+            </div>
+            <div class="form-group col-sm-3">
+                <label>ecapserialno</label>
+                <input ng-model="trade.ecapserialno" 
+                    type="text" name="ecapserialno" class="form-control" placeholder="" 
+                    required >
+            </div> 
+            <div class="form-group col-sm-3 ">
+                <label>&nbsp;</label>
+                <div>
+                    <button type="button" ng-click="save()" class="btn btn-primary" >提交</button>
+                    <button type="button" ng-click="clear()" class="btn btn-default" >清空</button>
+                </div>
+            </div>
+            
+            <div class="form-group col-sm-12" ng-if="trade_black">
+                <div class="alert alert-warning" role="alert" ng-bind="trade_black">...</div>
+            </div>
+        </form>
+        
+    </div>
+
+    <h3>订单列表</h3>
+    <hr/>
+    <div class="row">
+        <div class="panel-body col-sm-12" style="overflow-x: auto;">
+            <div class="form-inline">
+                <div class="form-group hidden">
+                    <input ng-model="busidate" 
+                        datepicker 
+                        class="form-control" type="text" placeholder="日期"
+                        name="busidate" required/>
+                    <button type="button" ng-click="!!busidate && export(busidate)" 
+                        class="btn btn-primary" >导出</button>
+                </div>
+                <div class="form-group">
+                    <input ng-model="investorname" 
+                        class="form-control" type="text" placeholder="投资人姓名模糊查询"
+                        name="investorname" required/>
+                    <button type="button" ng-click="!!investorname && query(investorname)" 
+                        class="btn btn-primary" >按用户名模糊查询</button>
+                </div>
+            </div>
+            
+            <table class="table" >
+                <thead>
+                    <tr ng-repeat="r in trade_data" ng-if="$index==0">
+                        <th ng-repeat="(k,v) in r" ng-bind="trade_head[k]"
+                            ng-if="(k=='ecapserialno' || k=='investorname')" ></th>
+                        <th ng-repeat="(k,v) in r" ng-bind="trade_head[k]"
+                            ng-if="!(k=='ecapserialno' || k=='investorname')" ></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="r in trade_data" >
+                        <td ng-repeat="(k,v) in r" ng-bind="v"
+                            ng-if="(k=='ecapserialno' || k=='investorname')" ></td>
+                        <td ng-repeat="(k,v) in r" ng-bind="v"
+                            ng-if="!(k=='ecapserialno' || k=='investorname')" ></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
