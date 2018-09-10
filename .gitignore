@@ -12,7 +12,7 @@ __pycache__/
 
 # js modules
 app/node_modules/
-
+app/static/plug/
 # Distribution / packaging
 .Python
 build/
