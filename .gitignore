@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# project-specific files
+.idea
+.vscode
+
 # js modules
 app/node_modules/
 
