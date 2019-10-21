@@ -56,5 +56,5 @@ sqlautocode==0.7
 tushare==0.8.5
 tzlocal==1.4
 urllib3==1.21.1
-Werkzeug==0.10.4
+Werkzeug==0.15.3
 WTForms==1.0.5
