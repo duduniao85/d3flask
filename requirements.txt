@@ -28,7 +28,7 @@ html5lib==1.0b3
 idna==2.5
 inflect==0.2.5
 itsdangerous==0.23
-Jinja2==2.7.1
+Jinja2==2.11.3
 jupyter-pip==0.3
 logging==0.4.9.6
 lxml==3.8.0
